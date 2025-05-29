@@ -8,7 +8,7 @@ export const GET = withErrorHandler(async (
   req: NextRequest,
   { params }: { params: { accountId: string } }
 ) => {
-  const { accountId } = params;
+  const { accountId } = await params;
 
   if (!validateUUID(accountId)) {
     throw new Error('Invalid account ID');

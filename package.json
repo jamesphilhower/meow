@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "prisma": {
+    "seed": "ts-node -r tsconfig-paths/register --project ./tsconfig.json prisma/seed.ts"
+  },
   "dependencies": {
     "@prisma/client": "^6.8.2",
     "next": "15.3.2",
@@ -21,6 +24,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5"
   }
 }
