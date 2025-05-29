@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  accounts  Account[]
+}
+
+model Account {
+  id            String   @id @default(uuid())
+  customerId    String
+  accountNumber String   @unique
+  createdAt     DateTime @default(now())
+
+  customer      Customer @relation(fields: [customerId], references: [id])
+  sentTransfers     Transaction[] @relation("FromAccount")
+  receivedTransfers Transaction[] @relation("ToAccount")
+}
+
+model Transaction {
+  id             String   @id @default(uuid())
+  fromAccountId  String?
+  toAccountId    String?
+  amountCents    BigInt
+  type           String   // DEPOSIT, TRANSFER
+  description    String?
+  createdAt      DateTime @default(now())
+
+  fromAccount    Account? @relation("FromAccount", fields: [fromAccountId], references: [id])
+  toAccount      Account? @relation("ToAccount", fields: [toAccountId], references: [id])
+}
+
+// TODO: Missing a lot from the original spec - status enums, currency, etc
+// We could use Prisma generators here - I've worked on augmenting zod-prisma-generator
+// by forking it, which could auto-generate Zod schemas from our Prisma schema
+// This would keep our validation in sync with the database schema
+//
+// For enums like TransactionStatus, AccountStatus, we have options:
+// 1. Database enums (works for all languages/APIs, single source of truth)
+// 2. Zod enums (more flexible, but only in TypeScript)
+// 3. Both (most type-safe but requires keeping them in sync)
+// 
+// Database enums are probably best for things like status that all consumers need
+
